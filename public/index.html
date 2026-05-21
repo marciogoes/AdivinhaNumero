@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
+    />
+    <title>Adivinha Número</title>
+    <meta name="description" content="Jogo de adivinhar um número entre 1 e 100" />
+
+    <!-- PWA: Web App Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#F97316" />
+
+    <!-- Ícones -->
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Adivinha" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Adivinha Número" />
+
+    <style>
+      /* Reset e ocupação total da tela – padrão React Native Web */
+      html,
+      body,
+      #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        overflow: hidden;
+        background-color: #0f172a;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      #root {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>
+      Você precisa habilitar o JavaScript para rodar este aplicativo.
+    </noscript>
+    <div id="root"></div>
+  </body>
+</html>

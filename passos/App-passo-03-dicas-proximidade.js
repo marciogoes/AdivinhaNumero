@@ -85,54 +85,74 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.titulo}>Adivinhe um Número</Text>
-      <Text style={[styles.mensagem, { color: corMensagem }]}>{mensagem}</Text>
-      <Text style={styles.tentativas}>
-        Tentativas: {tentativas} / {MAX_TENTATIVAS}
-      </Text>
+    <View style={styles.outer}>
+      <View style={styles.inner}>
+        <Text style={styles.titulo}>Adivinhe um Número</Text>
+        <Text style={[styles.mensagem, { color: corMensagem }]}>{mensagem}</Text>
+        <Text style={styles.tentativas}>
+          Tentativas: {tentativas} / {MAX_TENTATIVAS}
+        </Text>
 
-      {!acabouOJogo ? (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu palpite"
-            placeholderTextColor="#64748B"
-            value={palpite}
-            onChangeText={setPalpite}
-            keyboardType="numeric"
-            onSubmitEditing={tentar}
-          />
-          <TouchableOpacity style={styles.botao} onPress={tentar}>
-            <Text style={styles.botaoTexto}>Tentar</Text>
+        {!acabouOJogo ? (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu palpite"
+              placeholderTextColor="#64748B"
+              value={palpite}
+              onChangeText={setPalpite}
+              keyboardType="numeric"
+              onSubmitEditing={tentar}
+            />
+            <TouchableOpacity style={styles.botao} onPress={tentar}>
+              <Text style={styles.botaoTexto}>Tentar</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={[styles.botao, ganhou ? styles.botaoVerde : styles.botaoVermelho]}
+            onPress={reiniciar}
+          >
+            <Text style={styles.botaoTexto}>
+              {ganhou ? 'Jogar de Novo' : 'Tentar de Novo'}
+            </Text>
           </TouchableOpacity>
-        </>
-      ) : (
-        <TouchableOpacity
-          style={[styles.botao, ganhou ? styles.botaoVerde : styles.botaoVermelho]}
-          onPress={reiniciar}
-        >
-          <Text style={styles.botaoTexto}>
-            {ganhou ? 'Jogar de Novo' : 'Tentar de Novo'}
-          </Text>
-        </TouchableOpacity>
-      )}
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', padding: 24, alignItems: 'center', justifyContent: 'center' },
-  titulo: { color: '#F97316', fontSize: 28, fontWeight: 'bold', marginBottom: 24 },
-  mensagem: { fontSize: 20, fontWeight: '600', textAlign: 'center', marginBottom: 8, minHeight: 60, paddingHorizontal: 16 },
-  tentativas: { color: '#94A3B8', fontSize: 14, marginBottom: 24 },
-  input: {
-    backgroundColor: '#1E293B', color: '#F8FAFC', borderRadius: 8,
-    paddingHorizontal: 16, paddingVertical: 12, fontSize: 24,
-    textAlign: 'center', width: 200, marginBottom: 16,
+  outer: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
   },
-  botao: { backgroundColor: '#F97316', paddingHorizontal: 32, paddingVertical: 12, borderRadius: 8 },
+  inner: {
+    width: '100%',
+    maxWidth: 480,
+    alignItems: 'center',
+    padding: 24,
+  },
+  titulo: { color: '#F97316', fontSize: 38, fontWeight: 'bold', marginBottom: 20 },
+  mensagem: {
+    fontSize: 24, fontWeight: '700',
+    textAlign: 'center', marginBottom: 12, minHeight: 80, paddingHorizontal: 8,
+  },
+  tentativas: { color: '#94A3B8', fontSize: 16, marginBottom: 28 },
+  input: {
+    backgroundColor: '#1E293B', color: '#F8FAFC', borderRadius: 10,
+    paddingHorizontal: 20, paddingVertical: 16, fontSize: 28,
+    textAlign: 'center', width: '100%', maxWidth: 320, marginBottom: 20,
+  },
+  botao: {
+    backgroundColor: '#F97316', paddingHorizontal: 48, paddingVertical: 18,
+    borderRadius: 10, minWidth: 220, alignItems: 'center',
+  },
   botaoVerde: { backgroundColor: '#10B981' },
   botaoVermelho: { backgroundColor: '#EF4444' },
-  botaoTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  botaoTexto: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
 });

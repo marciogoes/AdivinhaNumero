@@ -109,93 +109,116 @@ export default function App() {
   // ────────── TELA 1: MENU DE DIFICULDADE ──────────
   if (dificuldade === null) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.titulo}>Adivinhe um Número</Text>
-        <Text style={styles.subtitulo}>Escolha a dificuldade</Text>
+      <View style={styles.outer}>
+        <View style={styles.inner}>
+          <Text style={styles.titulo}>Adivinhe um Número</Text>
+          <Text style={styles.subtitulo}>Escolha a dificuldade</Text>
 
-        {Object.entries(DIFICULDADES).map(([key, cfg]) => (
-          <TouchableOpacity
-            key={key}
-            style={styles.botaoMenu}
-            onPress={() => iniciarJogo(key)}
-          >
-            <Text style={styles.botaoMenuTitulo}>{cfg.label}</Text>
-            <Text style={styles.botaoMenuDetalhe}>
-              1 a {cfg.max} — {cfg.tentativas} tentativas
-            </Text>
-          </TouchableOpacity>
-        ))}
+          {Object.entries(DIFICULDADES).map(([key, cfg]) => (
+            <TouchableOpacity
+              key={key}
+              style={styles.botaoMenu}
+              onPress={() => iniciarJogo(key)}
+            >
+              <Text style={styles.botaoMenuTitulo}>{cfg.label}</Text>
+              <Text style={styles.botaoMenuDetalhe}>
+                1 a {cfg.max} — {cfg.tentativas} tentativas
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     );
   }
 
   // ────────── TELA 2: JOGO ──────────
   return (
-    <View style={styles.container}>
+    <View style={styles.outer}>
       <TouchableOpacity style={styles.linkVoltar} onPress={voltarAoMenu}>
         <Text style={styles.linkVoltarTexto}>← Trocar dificuldade</Text>
       </TouchableOpacity>
 
-      <Text style={styles.titulo}>Adivinhe um Número</Text>
-      <Text style={styles.subtitulo}>
-        {DIFICULDADES[dificuldade].label} (1 a {maxNumero})
-      </Text>
-      <Text style={[styles.mensagem, { color: corMensagem }]}>{mensagem}</Text>
-      <Text style={styles.tentativas}>
-        Tentativas: {tentativas} / {maxTentativas}
-      </Text>
+      <View style={styles.inner}>
+        <Text style={styles.titulo}>Adivinhe um Número</Text>
+        <Text style={styles.subtitulo}>
+          {DIFICULDADES[dificuldade].label} (1 a {maxNumero})
+        </Text>
+        <Text style={[styles.mensagem, { color: corMensagem }]}>{mensagem}</Text>
+        <Text style={styles.tentativas}>
+          Tentativas: {tentativas} / {maxTentativas}
+        </Text>
 
-      {!acabouOJogo ? (
-        <>
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu palpite"
-            placeholderTextColor="#64748B"
-            value={palpite}
-            onChangeText={setPalpite}
-            keyboardType="numeric"
-            onSubmitEditing={tentar}
-          />
-          <TouchableOpacity style={styles.botao} onPress={tentar}>
-            <Text style={styles.botaoTexto}>Tentar</Text>
+        {!acabouOJogo ? (
+          <>
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu palpite"
+              placeholderTextColor="#64748B"
+              value={palpite}
+              onChangeText={setPalpite}
+              keyboardType="numeric"
+              onSubmitEditing={tentar}
+            />
+            <TouchableOpacity style={styles.botao} onPress={tentar}>
+              <Text style={styles.botaoTexto}>Tentar</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={[styles.botao, ganhou ? styles.botaoVerde : styles.botaoVermelho]}
+            onPress={() => iniciarJogo(dificuldade)}
+          >
+            <Text style={styles.botaoTexto}>
+              {ganhou ? 'Jogar de Novo' : 'Tentar de Novo'}
+            </Text>
           </TouchableOpacity>
-        </>
-      ) : (
-        <TouchableOpacity
-          style={[styles.botao, ganhou ? styles.botaoVerde : styles.botaoVermelho]}
-          onPress={() => iniciarJogo(dificuldade)}
-        >
-          <Text style={styles.botaoTexto}>
-            {ganhou ? 'Jogar de Novo' : 'Tentar de Novo'}
-          </Text>
-        </TouchableOpacity>
-      )}
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', padding: 24, alignItems: 'center', justifyContent: 'center' },
-  titulo: { color: '#F97316', fontSize: 28, fontWeight: 'bold', marginBottom: 8 },
-  subtitulo: { color: '#94A3B8', fontSize: 16, marginBottom: 24 },
-  mensagem: { fontSize: 20, fontWeight: '600', textAlign: 'center', marginBottom: 8, minHeight: 60, paddingHorizontal: 16 },
-  tentativas: { color: '#94A3B8', fontSize: 14, marginBottom: 24 },
-  input: {
-    backgroundColor: '#1E293B', color: '#F8FAFC', borderRadius: 8,
-    paddingHorizontal: 16, paddingVertical: 12, fontSize: 24,
-    textAlign: 'center', width: 200, marginBottom: 16,
+  outer: {
+    flex: 1,
+    backgroundColor: '#0F172A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
   },
-  botao: { backgroundColor: '#F97316', paddingHorizontal: 32, paddingVertical: 12, borderRadius: 8 },
+  inner: {
+    width: '100%',
+    maxWidth: 480,
+    alignItems: 'center',
+    padding: 24,
+  },
+  titulo: { color: '#F97316', fontSize: 38, fontWeight: 'bold', marginBottom: 10 },
+  subtitulo: { color: '#94A3B8', fontSize: 18, marginBottom: 28, textAlign: 'center' },
+  mensagem: {
+    fontSize: 24, fontWeight: '700',
+    textAlign: 'center', marginBottom: 12, minHeight: 80, paddingHorizontal: 8,
+  },
+  tentativas: { color: '#94A3B8', fontSize: 16, marginBottom: 28 },
+  input: {
+    backgroundColor: '#1E293B', color: '#F8FAFC', borderRadius: 10,
+    paddingHorizontal: 20, paddingVertical: 16, fontSize: 28,
+    textAlign: 'center', width: '100%', maxWidth: 320, marginBottom: 20,
+  },
+  botao: {
+    backgroundColor: '#F97316', paddingHorizontal: 48, paddingVertical: 18,
+    borderRadius: 10, minWidth: 220, alignItems: 'center',
+  },
   botaoVerde: { backgroundColor: '#10B981' },
   botaoVermelho: { backgroundColor: '#EF4444' },
-  botaoTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  botaoTexto: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
   botaoMenu: {
-    backgroundColor: '#1E293B', paddingHorizontal: 32, paddingVertical: 16,
-    borderRadius: 8, marginBottom: 12, width: 280, alignItems: 'center',
+    backgroundColor: '#1E293B', paddingHorizontal: 32, paddingVertical: 20,
+    borderRadius: 10, marginBottom: 14, width: '100%', maxWidth: 360,
+    alignItems: 'center', alignSelf: 'center',
     borderWidth: 1, borderColor: '#334155',
   },
-  botaoMenuTitulo: { color: '#F97316', fontSize: 20, fontWeight: 'bold' },
-  botaoMenuDetalhe: { color: '#94A3B8', fontSize: 13, marginTop: 4 },
-  linkVoltar: { position: 'absolute', top: 50, left: 16 },
-  linkVoltarTexto: { color: '#94A3B8', fontSize: 14 },
+  botaoMenuTitulo: { color: '#F97316', fontSize: 24, fontWeight: 'bold' },
+  botaoMenuDetalhe: { color: '#94A3B8', fontSize: 15, marginTop: 6 },
+  linkVoltar: { position: 'absolute', top: 40, left: 16, zIndex: 1, padding: 8 },
+  linkVoltarTexto: { color: '#94A3B8', fontSize: 16 },
 });

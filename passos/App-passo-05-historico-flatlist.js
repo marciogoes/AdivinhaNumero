@@ -22,6 +22,8 @@
  * Atenção:
  *   FlatList precisa de altura definida (flex:1 ou height). Aqui
  *   envolvemos com uma View flex:1 que ocupa o resto da tela.
+ *   Tela agora alinhada ao topo (não centralizada como nos passos
+ *   anteriores), pra deixar espaço para o histórico crescer.
  */
 import React, { useState } from 'react';
 import {
@@ -136,110 +138,148 @@ export default function App() {
   // ────────── MENU ──────────
   if (dificuldade === null) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.titulo}>Adivinhe um Número</Text>
-        <Text style={styles.subtitulo}>Escolha a dificuldade</Text>
-        {Object.entries(DIFICULDADES).map(([key, cfg]) => (
-          <TouchableOpacity key={key} style={styles.botaoMenu} onPress={() => iniciarJogo(key)}>
-            <Text style={styles.botaoMenuTitulo}>{cfg.label}</Text>
-            <Text style={styles.botaoMenuDetalhe}>
-              1 a {cfg.max} — {cfg.tentativas} tentativas
-            </Text>
-          </TouchableOpacity>
-        ))}
+      <View style={styles.outerCentered}>
+        <View style={styles.inner}>
+          <Text style={styles.titulo}>Adivinhe um Número</Text>
+          <Text style={styles.subtitulo}>Escolha a dificuldade</Text>
+          {Object.entries(DIFICULDADES).map(([key, cfg]) => (
+            <TouchableOpacity key={key} style={styles.botaoMenu} onPress={() => iniciarJogo(key)}>
+              <Text style={styles.botaoMenuTitulo}>{cfg.label}</Text>
+              <Text style={styles.botaoMenuDetalhe}>
+                1 a {cfg.max} — {cfg.tentativas} tentativas
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     );
   }
 
   // ────────── JOGO ──────────
   return (
-    <View style={styles.container}>
+    <View style={styles.outerTop}>
       <TouchableOpacity style={styles.linkVoltar} onPress={() => setDificuldade(null)}>
         <Text style={styles.linkVoltarTexto}>← Trocar dificuldade</Text>
       </TouchableOpacity>
 
-      <View style={styles.topo}>
-        <Text style={styles.titulo}>Adivinhe um Número</Text>
-        <Text style={styles.subtitulo}>
-          {DIFICULDADES[dificuldade].label} — Tentativas: {tentativas} / {maxTentativas}
-        </Text>
-        <Text style={[styles.mensagem, { color: corMensagem }]}>{mensagem}</Text>
+      <View style={styles.innerJogo}>
+        <View style={styles.topo}>
+          <Text style={styles.titulo}>Adivinhe um Número</Text>
+          <Text style={styles.subtitulo}>
+            {DIFICULDADES[dificuldade].label} — {tentativas} / {maxTentativas} tentativas
+          </Text>
+          <Text style={[styles.mensagem, { color: corMensagem }]}>{mensagem}</Text>
 
-        {!acabouOJogo ? (
-          <View style={styles.formRow}>
-            <TextInput
-              style={styles.input}
-              placeholder="Palpite"
-              placeholderTextColor="#64748B"
-              value={palpite}
-              onChangeText={setPalpite}
-              keyboardType="numeric"
-              onSubmitEditing={tentar}
-            />
-            <TouchableOpacity style={styles.botao} onPress={tentar}>
-              <Text style={styles.botaoTexto}>Tentar</Text>
+          {!acabouOJogo ? (
+            <View style={styles.formRow}>
+              <TextInput
+                style={styles.inputRow}
+                placeholder="Palpite"
+                placeholderTextColor="#64748B"
+                value={palpite}
+                onChangeText={setPalpite}
+                keyboardType="numeric"
+                onSubmitEditing={tentar}
+              />
+              <TouchableOpacity style={styles.botaoRow} onPress={tentar}>
+                <Text style={styles.botaoTexto}>Tentar</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={[styles.botao, ganhou ? styles.botaoVerde : styles.botaoVermelho]}
+              onPress={() => iniciarJogo(dificuldade)}
+            >
+              <Text style={styles.botaoTexto}>
+                {ganhou ? 'Jogar de Novo' : 'Tentar de Novo'}
+              </Text>
             </TouchableOpacity>
-          </View>
-        ) : (
-          <TouchableOpacity
-            style={[styles.botao, ganhou ? styles.botaoVerde : styles.botaoVermelho]}
-            onPress={() => iniciarJogo(dificuldade)}
-          >
-            <Text style={styles.botaoTexto}>
-              {ganhou ? 'Jogar de Novo' : 'Tentar de Novo'}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
+          )}
+        </View>
 
-      {/* HISTÓRICO COM FlatList */}
-      <View style={styles.historicoContainer}>
-        <Text style={styles.historicoTitulo}>Histórico</Text>
-        <FlatList
-          data={historico}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <ItemHistorico item={item} />}
-          ListEmptyComponent={
-            <Text style={styles.vazio}>Nenhum palpite ainda</Text>
-          }
-        />
+        {/* HISTÓRICO COM FlatList */}
+        <View style={styles.historicoContainer}>
+          <Text style={styles.historicoTitulo}>Histórico</Text>
+          <FlatList
+            data={historico}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <ItemHistorico item={item} />}
+            ListEmptyComponent={
+              <Text style={styles.vazio}>Nenhum palpite ainda</Text>
+            }
+          />
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0F172A', padding: 16, paddingTop: 60 },
-  topo: { alignItems: 'center', marginBottom: 16 },
-  titulo: { color: '#F97316', fontSize: 26, fontWeight: 'bold' },
-  subtitulo: { color: '#94A3B8', fontSize: 14, marginTop: 4, marginBottom: 12 },
-  mensagem: { fontSize: 18, fontWeight: '600', textAlign: 'center', marginBottom: 16, minHeight: 50, paddingHorizontal: 16 },
-  formRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  input: {
-    backgroundColor: '#1E293B', color: '#F8FAFC', borderRadius: 8,
-    paddingHorizontal: 16, paddingVertical: 10, fontSize: 20,
-    textAlign: 'center', width: 140,
+  // Tela do menu: centralizada
+  outerCentered: {
+    flex: 1, backgroundColor: '#0F172A',
+    alignItems: 'center', justifyContent: 'center', padding: 16,
   },
-  botao: { backgroundColor: '#F97316', paddingHorizontal: 24, paddingVertical: 12, borderRadius: 8 },
+  // Tela do jogo: alinhada ao topo (precisa de espaço pra FlatList)
+  outerTop: {
+    flex: 1, backgroundColor: '#0F172A',
+    alignItems: 'center', padding: 16, paddingTop: 60,
+  },
+  inner: {
+    width: '100%', maxWidth: 480,
+    alignItems: 'center', padding: 24,
+  },
+  innerJogo: {
+    flex: 1, width: '100%', maxWidth: 480,
+  },
+  topo: { alignItems: 'center', marginBottom: 16 },
+  titulo: { color: '#F97316', fontSize: 38, fontWeight: 'bold', marginBottom: 10 },
+  subtitulo: { color: '#94A3B8', fontSize: 16, marginBottom: 16, textAlign: 'center' },
+  mensagem: {
+    fontSize: 22, fontWeight: '700',
+    textAlign: 'center', marginBottom: 20, minHeight: 60, paddingHorizontal: 8,
+  },
+  formRow: {
+    flexDirection: 'row', alignItems: 'center', gap: 12,
+    width: '100%', maxWidth: 360,
+  },
+  inputRow: {
+    flex: 1,
+    backgroundColor: '#1E293B', color: '#F8FAFC', borderRadius: 10,
+    paddingHorizontal: 16, paddingVertical: 14, fontSize: 24,
+    textAlign: 'center',
+  },
+  botaoRow: {
+    backgroundColor: '#F97316', paddingHorizontal: 28, paddingVertical: 16,
+    borderRadius: 10, alignItems: 'center',
+  },
+  botao: {
+    backgroundColor: '#F97316', paddingHorizontal: 48, paddingVertical: 18,
+    borderRadius: 10, minWidth: 220, alignItems: 'center', alignSelf: 'center',
+  },
   botaoVerde: { backgroundColor: '#10B981' },
   botaoVermelho: { backgroundColor: '#EF4444' },
-  botaoTexto: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  botaoTexto: { color: '#fff', fontSize: 20, fontWeight: 'bold' },
   botaoMenu: {
-    backgroundColor: '#1E293B', paddingHorizontal: 32, paddingVertical: 16,
-    borderRadius: 8, marginBottom: 12, width: 280, alignItems: 'center',
-    alignSelf: 'center', borderWidth: 1, borderColor: '#334155',
+    backgroundColor: '#1E293B', paddingHorizontal: 32, paddingVertical: 20,
+    borderRadius: 10, marginBottom: 14, width: '100%', maxWidth: 360,
+    alignItems: 'center', alignSelf: 'center',
+    borderWidth: 1, borderColor: '#334155',
   },
-  botaoMenuTitulo: { color: '#F97316', fontSize: 20, fontWeight: 'bold' },
-  botaoMenuDetalhe: { color: '#94A3B8', fontSize: 13, marginTop: 4 },
-  linkVoltar: { position: 'absolute', top: 50, left: 16, zIndex: 1 },
-  linkVoltarTexto: { color: '#94A3B8', fontSize: 14 },
-  historicoContainer: { flex: 1, marginTop: 16, borderTopWidth: 1, borderTopColor: '#1E293B', paddingTop: 12 },
-  historicoTitulo: { color: '#F8FAFC', fontSize: 16, fontWeight: 'bold', marginBottom: 8 },
+  botaoMenuTitulo: { color: '#F97316', fontSize: 24, fontWeight: 'bold' },
+  botaoMenuDetalhe: { color: '#94A3B8', fontSize: 15, marginTop: 6 },
+  linkVoltar: { position: 'absolute', top: 40, left: 16, zIndex: 1, padding: 8 },
+  linkVoltarTexto: { color: '#94A3B8', fontSize: 16 },
+  historicoContainer: {
+    flex: 1, marginTop: 20,
+    borderTopWidth: 1, borderTopColor: '#1E293B', paddingTop: 14,
+  },
+  historicoTitulo: { color: '#F8FAFC', fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
   itemHistorico: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#1E293B', borderRadius: 6, padding: 12, marginBottom: 6,
+    backgroundColor: '#1E293B', borderRadius: 8, padding: 14, marginBottom: 8,
   },
-  itemPalpite: { fontSize: 20, fontWeight: 'bold', width: 60, textAlign: 'center' },
-  itemTexto: { color: '#CBD5E1', fontSize: 14, marginLeft: 12, flex: 1 },
-  vazio: { color: '#64748B', fontStyle: 'italic', textAlign: 'center', marginTop: 12 },
+  itemPalpite: { fontSize: 24, fontWeight: 'bold', width: 70, textAlign: 'center' },
+  itemTexto: { color: '#CBD5E1', fontSize: 16, marginLeft: 14, flex: 1 },
+  vazio: { color: '#64748B', fontStyle: 'italic', textAlign: 'center', marginTop: 16, fontSize: 15 },
 });
